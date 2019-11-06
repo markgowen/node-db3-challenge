@@ -1,12 +1,12 @@
 const db = require('../data/db-config');
 
 module.exports = {
-    find,
-    findById,
-    findSteps,
-    add,
-    update,
-    remove
+  find,
+  findById,
+  findSteps,
+  add,
+  update,
+  remove
 };
 
 function find() {
@@ -20,21 +20,22 @@ function findById(id) {
 }
 
 function findSteps(id) {
-  return db('steps')
-    .join('schemes', 'schemes.id', 'scheme_name')
-    .select('steps.*', 'instructions')
-    .where('scheme_id', id);
+  return db
+    .select('steps.id', 'scheme_name', 'step_number', 'instructions')
+    .from('steps')
+    .join('schemes', 'steps.scheme_id', 'schemes.id')
+    .where('steps.scheme_id', Number(id));
 }
 
 function add(schemeData) {
   return db('schemes')
-    .add(schemeData)
+    .insert(schemeData)
     .then(ids => {
       return findById(ids[0]);
     });
 }
 
-function update(id, changes) {
+function update(changes, id) {
   return db('schemes')
     .where({ id })
     .update(changes);
